@@ -1,15 +1,19 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Menu, X, Sparkles, LogIn, UserPlus } from 'lucide-react'
 import Link from 'next/link'
 import { useI18n } from '@/components/providers/locale-provider'
-
-export type UserSummary = { name?: string | null; plan?: string | null }
+import { useElementSize } from '@/lib/useElementSize'
+import { MobileMenuPanel } from './MobileMenuPanel'
+import { UserSummary } from '@/types/user'
+import { AnimatePresence, motion } from 'framer-motion'
 
 export default function Header({ user, variant = 'landing' }: { user?: UserSummary; variant?: 'landing' | 'dashboard' }) {
   const { t, locale, setLocale } = useI18n()
   const [open, setOpen] = useState(false)
+  const headerEl = useRef<HTMLElement | null>(null)
+  const { ref: sizeRef, size } = useElementSize<HTMLElement>()
 
   useEffect(() => {
     function handleResize() {
@@ -24,8 +28,9 @@ export default function Header({ user, variant = 'landing' }: { user?: UserSumma
   const isDashboard = variant === 'dashboard'
 
   return (
-  <header className={isDashboard ? 'border-b bg-white/80 z-40 relative' : 'relative z-40'}>
-      <div className="mx-auto flex w-full max-w-6xl items-center px-4 py-4 sm:px-6">
+    <>
+  <header ref={(el) => { headerEl.current = el; (sizeRef as any).current = el }} className={isDashboard ? 'border-b bg-white/80 z-50 relative' : 'relative z-50'}>
+        <div className="mx-auto flex w-full max-w-6xl items-center px-4 py-4 sm:px-6">
         <Link href="#" className="flex items-center gap-2">
           <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-tr from-indigo-500 to-fuchsia-500 shadow-lg shadow-fuchsia-500/30">
             <Sparkles className="h-4 w-4 text-white" />
@@ -35,6 +40,7 @@ export default function Header({ user, variant = 'landing' }: { user?: UserSumma
 
         {!isDashboard && (
           <nav className="hidden md:flex ml-8 items-center gap-6 text-sm text-white/80">
+            <Link href="/builder" className="hover:text-white">{t('landing.nav.builder')}</Link>
             <a href="#" className="hover:text-white">{t('landing.nav.features')}</a>
             <a href="#" className="hover:text-white">{t('landing.nav.pricing')}</a>
             <a href="#" className="hover:text-white">{t('landing.nav.docs')}</a>
@@ -75,49 +81,45 @@ export default function Header({ user, variant = 'landing' }: { user?: UserSumma
         >
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
-      </div>
+        </div>
+      </header>
 
-      {/* Mobile overlay + rounded panel */}
-      {open && (
-        <>
-          {/* Backdrop blur overlay (covers whole app except header which has higher z-index) */}
-          <div onClick={() => setOpen(false)} className="fixed inset-0 z-20 md:hidden bg-black/20 backdrop-blur-sm" aria-hidden="true" />
+      {/* Mobile overlay + panel (outside header). No blur; panel exactly below header. */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              key="overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 z-30 md:hidden bg-black/20"
+              aria-hidden="true"
+            />
 
-          {/* Static (in-flow) full-width mobile panel rendered under the header */}
-          <div className={`block md:hidden relative z-30 w-full ${isDashboard ? 'bg-white/95 border-b border-slate-100 text-slate-700' : 'bg-[#05060a]/90 border-b border-white/5 text-white/90'} rounded-b-2xl shadow-xl`}>
-            <div className="w-full px-4 py-4 sm:px-6">
-              {!isDashboard && (
-                <nav className="flex flex-col gap-3 text-sm text-white/90">
-                  <a href="#" className="block rounded-md px-3 py-2 hover:bg-white/5">{t('landing.nav.features')}</a>
-                  <a href="#" className="block rounded-md px-3 py-2 hover:bg-white/5">{t('landing.nav.pricing')}</a>
-                  <a href="#" className="block rounded-md px-3 py-2 hover:bg-white/5">{t('landing.nav.docs')}</a>
-                </nav>
-              )}
-
-              <div className="mt-4 flex flex-col gap-2">
-                <div className="flex gap-2 text-xs">
-                  <button onClick={() => { setLocale('cs'); setOpen(false) }} className={`flex-1 rounded px-2 py-2 border ${locale==='cs' ? 'border-white/40 text-white' : 'border-white/10 text-white/70 hover:text-white'}`}>CS</button>
-                  <button onClick={() => { setLocale('en'); setOpen(false) }} className={`flex-1 rounded px-2 py-2 border ${locale==='en' ? 'border-white/40 text-white' : 'border-white/10 text-white/70 hover:text-white'}`}>EN</button>
-                </div>
-
-                {isDashboard ? (
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-slate-700">Vítejte, {user?.name}</div>
-                    <Link href="/api/auth/signout" onClick={() => setOpen(false)} className="ml-2">
-                      <button className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900">Odhlásit se</button>
-                    </Link>
-                  </div>
-                ) : (
-                  <>
-                    <Link href="/auth/login" onClick={() => setOpen(false)} className="block w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-center text-sm font-semibold text-white/90 hover:bg-white/10">{t('landing.nav.signin')}</Link>
-                    <Link href="/auth/register" onClick={() => setOpen(false)} className="block w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-center text-sm font-semibold text-white/90 hover:bg-white/10">{t('landing.nav.signup')}</Link>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-    </header>
+            <motion.div
+              key="panel"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="fixed md:hidden z-40 inset-x-0"
+              style={{ top: size.height || 0 }}
+            >
+              <MobileMenuPanel
+                isDashboard={isDashboard}
+                locale={locale}
+                setLocale={(l) => setLocale(l)}
+                t={t}
+                userName={user?.name ?? null}
+                onClose={() => setOpen(false)}
+              />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }

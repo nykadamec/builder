@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Plus, Code, Zap, Users } from "lucide-react"
 import Link from "next/link"
 import Header from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
@@ -114,6 +115,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </main>
+      <Footer />
     </div>
   )
 }

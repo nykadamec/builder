@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { FooterNote } from "@/components/blocks/footer";
 import { ArrowRight, Sparkles, Rocket, Star, Feather } from "lucide-react";
-import { builder_area as TextBuild } from "@/components/builder/builder_area";
 import { useI18n } from "@/components/providers/locale-provider";
 import Header from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 
 export default function LandingPage() {
   const { t } = useI18n()
@@ -17,8 +17,6 @@ export default function LandingPage() {
 
       {/* Hero */}
       <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-          <TextBuild />
-
         <motion.div
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -89,7 +87,8 @@ export default function LandingPage() {
         </motion.ul>
       </main>
 
-      <FooterNote />
+  <FooterNote />
+  <Footer />
     </div>
   );
 }
