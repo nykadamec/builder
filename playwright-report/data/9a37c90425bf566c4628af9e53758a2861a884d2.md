@@ -1,0 +1,74 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - text: AI App Builder
+  - navigation:
+    - link "Funkce":
+      - /url: "#features"
+    - link "Ceny":
+      - /url: "#pricing"
+    - link "Dokumentace":
+      - /url: "#docs"
+  - link "Přihlásit se":
+    - /url: /api/auth/signin
+- text: 🚀 Nová generace vývoje aplikací
+- heading "Vytvářejte aplikace pomocí AI" [level=1]
+- paragraph: Moderní platforma pro vytváření Next.js aplikací pomocí umělé inteligence. Generujte komponenty, stránky a celé aplikace jednoduše pomocí chatu.
+- link "Začít zdarma":
+  - /url: /api/auth/signin
+- link "Zjistit více":
+  - /url: "#features"
+- text: Next.js 15 TypeScript Tailwind CSS
+- heading "Proč AI App Builder?" [level=2]
+- paragraph: Kombinujeme sílu umělé inteligence s moderními technologiemi pro rychlý vývoj aplikací.
+- heading "AI-Powered generování" [level=3]
+- paragraph: Popište svou aplikaci v přirozeném jazyce a AI vytvoří kompletní kód.
+- heading "Moderní technologie" [level=3]
+- paragraph: Next.js 15, TypeScript, Tailwind CSS a další nejnovější nástroje.
+- heading "Rychlý vývoj" [level=3]
+- paragraph: Od nápadu k funkční aplikaci během minut, ne hodin nebo dnů.
+- heading "Připraveni začít?" [level=2]
+- paragraph: Připojte se k tisícům vývojářů, kteří už používají AI App Builder pro vytváření úžasných aplikací.
+- link "Začít zdarma":
+  - /url: /auth/signin
+  - button "Začít zdarma"
+- contentinfo:
+  - text: AI App Builder
+  - paragraph: Moderní platforma pro vytváření aplikací pomocí umělé inteligence.
+  - heading "Produkt" [level=3]
+  - list:
+    - listitem:
+      - link "Funkce":
+        - /url: "#features"
+    - listitem:
+      - link "Ceny":
+        - /url: "#pricing"
+    - listitem:
+      - link "Dokumentace":
+        - /url: "#docs"
+  - heading "Společnost" [level=3]
+  - list:
+    - listitem:
+      - link "O nás":
+        - /url: /about
+    - listitem:
+      - link "Kontakt":
+        - /url: /contact
+    - listitem:
+      - link "Ochrana soukromí":
+        - /url: /privacy
+  - heading "Podpora" [level=3]
+  - list:
+    - listitem:
+      - link "Nápověda":
+        - /url: /help
+    - listitem:
+      - link "Podpora":
+        - /url: /support
+    - listitem:
+      - link "Stav služby":
+        - /url: /status
+  - paragraph: © 2024 AI App Builder. Všechna práva vyhrazena.
+- alert
+```

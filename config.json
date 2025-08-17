@@ -1,0 +1,18 @@
+{
+  "appName": "AI Web App Builder",
+  "version": "0.2.0",
+  "author": "nykadamec",
+  "github": "https://github.com/nykadamec",
+  "description": "AI-powered builder for creating web apps from natural language prompts.",
+  "ui": {
+    "designSystem": "Aceternity UI inspired",
+    "framework": "Tailwind CSS + Framer Motion",
+    "theme": "Dark-first design",
+    "colorPalette": "Indigo/Violet/Fuchsia gradients"
+  },
+  "playwright": {
+    "baseURL": "http://localhost:3000",
+    "reportDir": "playwright-report"
+  }
+}
+
