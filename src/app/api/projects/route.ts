@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const search = searchParams.get('search') || ''
-    const status = searchParams.get('status')
+  const status = (searchParams.get('status') || undefined) as any
 
     const skip = (page - 1) * limit
 
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
           { description: { contains: search, mode: 'insensitive' as const } },
         ],
       }),
-      ...(status && { status }),
+  ...(status ? { status } : {}),
     }
 
     const [projects, total] = await Promise.all([
@@ -136,30 +136,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate unique slug
-    const baseSlug = generateProjectSlug(name)
-    let slug = baseSlug
-    let counter = 1
-    
-    while (await prisma.project.findFirst({ where: { slug, userId: session.user.id } })) {
-      slug = `${baseSlug}-${counter}`
-      counter++
-    }
-
-    // Create project
+    // Create project (schema uses simple fields; config stored in framework/styling/database)
     const project = await prisma.project.create({
       data: {
         name,
         description,
-        slug,
         userId: session.user.id,
-        template,
-        config: {
-          framework: 'nextjs',
-          typescript: true,
-          tailwind: true,
-          database: 'postgresql',
-        },
+        framework: 'nextjs',
+        styling: 'tailwind',
+        database: 'postgresql',
       },
       include: {
         _count: {

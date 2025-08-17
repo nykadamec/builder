@@ -96,14 +96,14 @@ export async function POST(request: NextRequest) {
           aiCallsUsed: { increment: 1 },
         },
       }),
+      // Log API usage using the ApiUsage model fields defined in Prisma schema
       prisma.apiUsage.create({
         data: {
           userId: session.user.id,
-          provider: aiProvider,
-          model: aiConfig.model,
-          tokensUsed: estimatedTokens,
+          endpoint: '/api/generate',
+          method: 'POST',
+          tokens: estimatedTokens,
           cost: estimatedCost,
-          type: 'generation',
         },
       }),
     ])

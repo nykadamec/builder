@@ -16,7 +16,6 @@ export async function POST(
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      include: { usage: true }
     })
 
     if (!user) {
@@ -45,7 +44,7 @@ export async function POST(
       ENTERPRISE: { exportsPerMonth: -1 } // unlimited
     }[user.plan]
 
-    if (planLimits.exportsPerMonth !== -1 && user.usage && user.usage.exportsUsed >= planLimits.exportsPerMonth) {
+  if (planLimits.exportsPerMonth !== -1 && user.exportsUsed >= planLimits.exportsPerMonth) {
       return NextResponse.json(
         { error: 'Export limit reached for your plan' },
         { status: 403 }
@@ -63,26 +62,21 @@ export async function POST(
       zip.file(file.path, file.content)
     })
 
-    // Vygenerovat ZIP
-    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' })
+    // Vygenerovat ZIP jako uint8array (kompatibilní s BodyInit)
+    const zipUint8 = await zip.generateAsync({ type: 'uint8array' })
+    const zipBuffer = zipUint8.buffer.slice(zipUint8.byteOffset, zipUint8.byteOffset + zipUint8.byteLength)
 
-    // Aktualizovat počet exportů
-    if (user.usage) {
-      await prisma.usage.update({
-        where: { userId: user.id },
-        data: {
-          exportsUsed: {
-            increment: 1
-          }
-        }
-      })
-    }
+    // Aktualizovat počet exportů přímo na uživateli
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { exportsUsed: { increment: 1 } },
+    })
 
     // Vrátit ZIP soubor
-    return new NextResponse(zipBuffer, {
+    return new NextResponse(zipBuffer as unknown as BodyInit, {
       headers: {
         'Content-Type': 'application/zip',
-        'Content-Disposition': `attachment; filename="${project.slug}.zip"`
+        'Content-Disposition': `attachment; filename="${project.name.replace(/\s+/g, '_')}.zip"`
       }
     })
 

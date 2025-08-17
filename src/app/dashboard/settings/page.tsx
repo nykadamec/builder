@@ -18,7 +18,6 @@ export default async function SettingsPage() {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    include: { usage: true }
   })
 
   if (!user) {
@@ -91,13 +90,14 @@ export default async function SettingsPage() {
               </Badge>
             </div>
             
-            {user.usage && (
+            {/* usage fields are on the user model directly */}
+            {user && (
               <>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>AI volání</span>
                     <span>
-                      {user.usage.aiCallsUsed} / {planLimits.aiCallsPerMonth === -1 ? '∞' : planLimits.aiCallsPerMonth}
+                      {user.aiCallsUsed} / {planLimits.aiCallsPerMonth === -1 ? '∞' : planLimits.aiCallsPerMonth}
                     </span>
                   </div>
                   <div className="w-full bg-secondary rounded-full h-2">
@@ -105,7 +105,7 @@ export default async function SettingsPage() {
                       className="bg-primary h-2 rounded-full" 
                       style={{ 
                         width: planLimits.aiCallsPerMonth === -1 ? '0%' : 
-                               `${Math.min((user.usage.aiCallsUsed / planLimits.aiCallsPerMonth) * 100, 100)}%` 
+                               `${Math.min((user.aiCallsUsed / planLimits.aiCallsPerMonth) * 100, 100)}%` 
                       }}
                     />
                   </div>
@@ -115,7 +115,7 @@ export default async function SettingsPage() {
                   <div className="flex justify-between text-sm mb-1">
                     <span>Projekty</span>
                     <span>
-                      {user.usage.projectsUsed} / {planLimits.maxProjects === -1 ? '∞' : planLimits.maxProjects}
+                      {user.projectsUsed} / {planLimits.maxProjects === -1 ? '∞' : planLimits.maxProjects}
                     </span>
                   </div>
                   <div className="w-full bg-secondary rounded-full h-2">
@@ -123,7 +123,7 @@ export default async function SettingsPage() {
                       className="bg-primary h-2 rounded-full" 
                       style={{ 
                         width: planLimits.maxProjects === -1 ? '0%' : 
-                               `${Math.min((user.usage.projectsUsed / planLimits.maxProjects) * 100, 100)}%` 
+                               `${Math.min((user.projectsUsed / planLimits.maxProjects) * 100, 100)}%` 
                       }}
                     />
                   </div>
@@ -133,7 +133,7 @@ export default async function SettingsPage() {
                   <div className="flex justify-between text-sm mb-1">
                     <span>Exporty</span>
                     <span>
-                      {user.usage.exportsUsed} / {planLimits.exportsPerMonth === -1 ? '∞' : planLimits.exportsPerMonth}
+                      {user.exportsUsed} / {planLimits.exportsPerMonth === -1 ? '∞' : planLimits.exportsPerMonth}
                     </span>
                   </div>
                   <div className="w-full bg-secondary rounded-full h-2">
@@ -141,7 +141,7 @@ export default async function SettingsPage() {
                       className="bg-primary h-2 rounded-full" 
                       style={{ 
                         width: planLimits.exportsPerMonth === -1 ? '0%' : 
-                               `${Math.min((user.usage.exportsUsed / planLimits.exportsPerMonth) * 100, 100)}%` 
+                               `${Math.min((user.exportsUsed / planLimits.exportsPerMonth) * 100, 100)}%` 
                       }}
                     />
                   </div>
@@ -150,7 +150,7 @@ export default async function SettingsPage() {
                 <div>
                   <label className="text-sm font-medium">Reset využití</label>
                   <p className="text-sm text-muted-foreground">
-                    {format(user.usage.usageResetDate, 'dd. MMMM yyyy', { locale: cs })}
+                    {format(user.usageResetDate, 'dd. MMMM yyyy', { locale: cs })}
                   </p>
                 </div>
               </>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Plus, Code, Zap, Users } from "lucide-react"
 import Link from "next/link"
+import Header from '@/components/layout/Header'
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
@@ -18,29 +19,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-slate-900">AI App Builder</h1>
-              <Badge variant="secondary" className="text-xs">
-                {user.plan}
-              </Badge>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-sm text-slate-600">
-                Vítejte, {user.name}
-              </div>
-              <Link href="/api/auth/signout">
-                <Button variant="outline" size="sm">
-                  Odhlásit se
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header variant="dashboard" user={{ name: user.name, plan: user.plan }} />
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
@@ -99,9 +78,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <Link href="/dashboard/projects/new">
-                <Button className="w-full">
-                  Začít nový projekt
-                </Button>
+                <Button className="w-full">Začít nový projekt</Button>
               </Link>
             </CardContent>
           </Card>
@@ -112,15 +89,11 @@ export default async function DashboardPage() {
                 <Code className="h-5 w-5" />
                 <span>Moje Projekty</span>
               </CardTitle>
-              <CardDescription>
-                Spravujte a upravujte své existující projekty
-              </CardDescription>
+              <CardDescription>Spravujte a upravujte své existující projekty</CardDescription>
             </CardHeader>
             <CardContent>
               <Link href="/dashboard/projects">
-                <Button variant="outline" className="w-full">
-                  Zobrazit projekty
-                </Button>
+                <Button variant="outline" className="w-full">Zobrazit projekty</Button>
               </Link>
             </CardContent>
           </Card>
@@ -130,9 +103,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Nedávná aktivita</CardTitle>
-            <CardDescription>
-              Přehled vašich posledních akcí
-            </CardDescription>
+            <CardDescription>Přehled vašich posledních akcí</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-8 text-muted-foreground">

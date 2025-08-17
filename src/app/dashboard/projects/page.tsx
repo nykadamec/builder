@@ -174,8 +174,8 @@ export default async function ProjectsPage() {
                 <div className="text-sm text-gray-600">Celkem projektů</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {projects.filter(p => p.status === 'ACTIVE').length}
+                  <div className="text-2xl font-bold text-green-600">
+                  {projects.filter(p => p.status === 'COMPLETED').length}
                 </div>
                 <div className="text-sm text-gray-600">Aktivních projektů</div>
               </div>

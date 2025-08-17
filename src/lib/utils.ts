@@ -140,7 +140,12 @@ export function extractExports(code: string): string[] {
 
 // Date utilities
 export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('cs-CZ', {
+  // Try to infer locale from document or cookie when in browser
+  let locale = 'cs-CZ'
+  if (typeof document !== 'undefined') {
+    locale = document.documentElement.lang === 'en' ? 'en-US' : 'cs-CZ'
+  }
+  return new Intl.DateTimeFormat(locale as Intl.LocalesArgument, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -154,22 +159,25 @@ export function formatRelativeTime(date: Date): string {
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
   
   if (diffInSeconds < 60) {
-    return 'právě teď'
+    return typeof document !== 'undefined' && document.documentElement.lang === 'en' ? 'just now' : 'právě teď'
   }
   
   const diffInMinutes = Math.floor(diffInSeconds / 60)
   if (diffInMinutes < 60) {
-    return `před ${diffInMinutes} min`
+    const isEn = typeof document !== 'undefined' && document.documentElement.lang === 'en'
+    return isEn ? `${diffInMinutes} min ago` : `před ${diffInMinutes} min`
   }
   
   const diffInHours = Math.floor(diffInMinutes / 60)
   if (diffInHours < 24) {
-    return `před ${diffInHours} h`
+    const isEn = typeof document !== 'undefined' && document.documentElement.lang === 'en'
+    return isEn ? `${diffInHours} h ago` : `před ${diffInHours} h`
   }
   
   const diffInDays = Math.floor(diffInHours / 24)
   if (diffInDays < 7) {
-    return `před ${diffInDays} dny`
+    const isEn = typeof document !== 'undefined' && document.documentElement.lang === 'en'
+    return isEn ? `${diffInDays} days ago` : `před ${diffInDays} dny`
   }
   
   return formatDate(date)

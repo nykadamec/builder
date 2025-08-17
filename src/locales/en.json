@@ -1,0 +1,35 @@
+{
+  "app": {
+    "title": "AI App Builder - Build apps with AI",
+    "description": "A modern platform for creating Next.js apps using AI. Generate components, pages, and full apps using chat.",
+    "keywords": ["AI", "app builder", "Next.js", "React", "TypeScript", "Tailwind CSS", "artificial intelligence", "code generation"],
+    "brand": "AI App Builder"
+  },
+  "landing": {
+    "badge": "A new generation of app development",
+    "headline": "Build apps\nwith AI",
+    "subheadline": "A modern platform for creating Next.js apps using artificial intelligence. Generate components, pages and full apps easily using chat.",
+    "cta_primary": "Get started for free",
+    "cta_secondary": "Learn more",
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "docs": "Docs",
+      "signin": "Sign in",
+      "signup": "Sign up"
+    },
+    "stack": {
+      "next": "Next.js 15",
+      "ts": "TypeScript",
+      "tw": "Tailwind CSS"
+    },
+    "footer_note": "Inspired by components from ui.aceternity.com. Built with Tailwind CSS."
+  },
+  "time": {
+    "now": "just now",
+    "minutes": "{count} min ago",
+    "hours": "{count} h ago",
+    "days": "{count} days ago",
+    "format": "en-US"
+  }
+}

@@ -1,16 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { FooterNote } from "@/components/blocks/footer";
-import { ArrowRight, Sparkles, LogIn, UserPlus , Rocket, Star, Feather } from "lucide-react";
+import { ArrowRight, Sparkles, Rocket, Star, Feather } from "lucide-react";
 import { builder_area as TextBuild } from "@/components/builder/builder_area";
+import { useI18n } from "@/components/providers/locale-provider";
+import Header from '@/components/layout/Header'
 
 export default function LandingPage() {
+  const { t } = useI18n()
   return (
     <div className="flex min-h-screen flex-col  text-white antialiased selection:bg-white/10 selection:text-white">
-      <AuroraBackdrop />
-      <NavBar />
+  <AuroraBackdrop />
+  <Header variant="landing" />
 
       {/* Hero */}
       <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
@@ -24,7 +27,7 @@ export default function LandingPage() {
         >
           <span className="inline-flex items-center gap-2">
             <Sparkles className="h-4 w-4" />
-            <span className="text-white/80">Nová generace vývoje aplikací</span>
+            <span className="text-white/80">{t('landing.badge')}</span>
             
           </span>
         </motion.div>
@@ -36,8 +39,8 @@ export default function LandingPage() {
           className="text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl"
         >
           <GradientText>
-            Vytvářejte aplikace
-            <br className="hidden sm:block" /> pomocí AI
+            {t('landing.headline').split('\n')[0]}
+            <br className="hidden sm:block" /> {t('landing.headline').split('\n')[1]}
           </GradientText>
         </motion.h1>
 
@@ -47,7 +50,7 @@ export default function LandingPage() {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
           className="mt-6 max-w-3xl text-lg text-white/70"
         >
-          Moderní platforma pro vytváření Next.js aplikací pomocí umělé inteligence. Generujte komponenty, stránky a celé aplikace jednoduše pomocí chatu.
+          {t('landing.subheadline')}
         </motion.p>
 
         <motion.div
@@ -61,7 +64,7 @@ export default function LandingPage() {
             className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-tr from-indigo-500 via-violet-500 to-fuchsia-500 px-6 py-3 text-base font-semibold shadow-lg shadow-fuchsia-500/20 transition hover:shadow-fuchsia-500/30 focus:outline-none"
           >
             <span className="relative z-10 inline-flex items-center gap-2">
-              <Rocket className="h-4 w-4" /> Začít zdarma
+              <Rocket className="h-4 w-4" /> {t('landing.cta_primary')}
             </span>
             <GlowBorder />
           </a>
@@ -70,7 +73,7 @@ export default function LandingPage() {
             href="#"
             className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 py-3 font-semibold text-white/90 backdrop-blur transition hover:bg-white/[0.07]"
           >
-            Zjistit více <ArrowRight className="h-4 w-4" />
+            {t('landing.cta_secondary')} <ArrowRight className="h-4 w-4" />
           </a>
         </motion.div>
 
@@ -80,49 +83,14 @@ export default function LandingPage() {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
           className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-white/70"
         >
-          <li className="inline-flex items-center gap-2"><Star className="h-4 w-4" /> Next.js 15</li>
-          <li className="inline-flex items-center gap-2"><Feather className="h-4 w-4" /> TypeScript</li>
-          <li className="inline-flex items-center gap-2">Tailwind CSS</li>
+          <li className="inline-flex items-center gap-2"><Star className="h-4 w-4" /> {t('landing.stack.next')}</li>
+          <li className="inline-flex items-center gap-2"><Feather className="h-4 w-4" /> {t('landing.stack.ts')}</li>
+          <li className="inline-flex items-center gap-2">{t('landing.stack.tw')}</li>
         </motion.ul>
       </main>
 
       <FooterNote />
     </div>
-  );
-}
-
-function NavBar() {
-  return (
-    <header className="relative z-20">
-      <div className="mx-auto flex max-w-6xl items-center px-6 py-5">
-        <a href="#" className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-tr from-indigo-500 to-fuchsia-500 shadow-lg shadow-fuchsia-500/30">
-            <Sparkles className="h-4 w-4 text-white" />
-          </span>
-          <span className="text-lg font-bold tracking-tight">AI App Builder</span>
-        </a>
-
-        <nav className="absolute left-1/2 transform -translate-x-1/2 hidden items-center gap-6 text-sm text-white/80 md:flex">
-          <a href="#" className="hover:text-white">Funkce</a>
-          <a href="#" className="hover:text-white">Ceny</a>
-          <a href="#" className="hover:text-white">Dokumentace</a>
-        </nav>
-
-        <div className="hidden md:flex gap-2 ml-auto">
-          <a
-            href="/auth/login"
-            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/90 backdrop-blur hover:bg-white/10"
-          >
-            <LogIn className="h-4 w-4" /> Sign in
-          </a>
-          <a href="/auth/register"
-          className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/90 backdrop-blur hover:bg-white/10"
-          >
-            <UserPlus className="h-4 w-4" /> Sign up
-          </a>
-        </div>
-      </div>
-    </header>
   );
 }
 
@@ -158,6 +126,6 @@ function AuroraBackdrop() {
 }
 
 // USE footer block
-FooterNote();
+// FooterNote is used above in the component
 
 

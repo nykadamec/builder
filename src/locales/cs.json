@@ -1,0 +1,35 @@
+{
+  "app": {
+    "title": "AI App Builder - Vytvářejte aplikace pomocí umělé inteligence",
+    "description": "Moderní platforma pro vytváření Next.js aplikací pomocí AI. Generujte komponenty, stránky a celé aplikace jednoduše pomocí chatu.",
+    "keywords": ["AI", "app builder", "Next.js", "React", "TypeScript", "Tailwind CSS", "umělá inteligence", "generování kódu"],
+    "brand": "AI App Builder"
+  },
+  "landing": {
+    "badge": "Nová generace vývoje aplikací",
+    "headline": "Vytvářejte aplikace\npomocí AI",
+    "subheadline": "Moderní platforma pro vytváření Next.js aplikací pomocí umělé inteligence. Generujte komponenty, stránky a celé aplikace jednoduše pomocí chatu.",
+    "cta_primary": "Začít zdarma",
+    "cta_secondary": "Zjistit více",
+    "nav": {
+      "features": "Funkce",
+      "pricing": "Ceny",
+      "docs": "Dokumentace",
+      "signin": "Přihlásit",
+      "signup": "Registrovat"
+    },
+    "stack": {
+      "next": "Next.js 15",
+      "ts": "TypeScript",
+      "tw": "Tailwind CSS"
+    },
+    "footer_note": "Inspirováno komponentami z ui.aceternity.com. Postaveno na Tailwind CSS."
+  },
+  "time": {
+    "now": "právě teď",
+    "minutes": "před {count} min",
+    "hours": "před {count} h",
+    "days": "před {count} dny",
+    "format": "cs-CZ"
+  }
+}

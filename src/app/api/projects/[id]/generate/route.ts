@@ -148,11 +148,11 @@ Vygenerujte kompletní soubory s jejich cestami.`
       },
     })
 
-    // Aktualizujeme status projektu
+    // Aktualizujeme status projektu (použít enum hodnotu z Prisma schema)
     await prisma.project.update({
       where: { id: projectId },
       data: {
-        status: 'GENERATED',
+        status: 'COMPLETED',
         updatedAt: new Date(),
       },
     })
@@ -162,10 +162,9 @@ Vygenerujte kompletní soubory s jejich cestami.`
     await prisma.projectFile.create({
       data: {
         projectId,
-        name: 'generated-code.md',
+        filename: 'generated-code.md',
         path: '/generated-code.md',
         content: generatedCode,
-        type: 'markdown',
       },
     })
 
