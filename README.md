@@ -1,3 +1,7 @@
+<div align="right">
+<strong>Language:</strong> English | <a href="./README_CZ.md">Čeština</a>
+</div>
+
 <div align="center">
 
 # AI Web App Builder
