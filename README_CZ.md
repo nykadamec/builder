@@ -187,4 +187,25 @@ pnpm test:e2e:report
 
 ---
 
+## Screenshoty
+
+Několik rychlých snímků aplikace (vygenerováno skriptem `tools/screenshot.js` a uloženo v repozitáři):
+
+- Domovská stránka: `screenshots/home.png`
+
+  ![Domovská stránka](screenshots/home.png)
+
+- Přihlášení: `screenshots/login.png`
+
+  ![Přihlášení](screenshots/login.png)
+
+- Registrace: `screenshots/register.png`
+
+  ![Registrace](screenshots/register.png)
+
+- Builder: `screenshots/builder.png`
+
+  ![Builder](screenshots/builder.png)
+
+
 Vyrobeno s ❤️ od [nykadamec](https://github.com/nykadamec)
