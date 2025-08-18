@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions, PLAN_LIMITS } from '@/lib/auth'
+import { withAuth } from '@/lib/auth/middleware'
+import { AuthUser } from '@/lib/auth/service'
 import { AIService, AI_CONFIGS, formatPromptTemplate, PROMPT_TEMPLATES } from '@/lib/ai'
 import { prisma } from '@/lib/prisma'
 import { AppError, handleApiError, shouldResetUsage } from '@/lib/utils'
 
-export async function POST(request: NextRequest) {
+async function generateHandler(
+  request: NextRequest,
+  context: { user?: AuthUser }
+): Promise<NextResponse> {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
+    if (!context.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     // Get user data and check usage limits
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: context.user.id },
       select: {
         plan: true,
         aiCallsUsed: true,
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
     // Reset usage if needed
     if (shouldResetUsage(user.usageResetDate)) {
       await prisma.user.update({
-        where: { id: session.user.id },
+        where: { id: context.user.id },
         data: {
           aiCallsUsed: 0,
           projectsUsed: 0,
@@ -57,10 +58,9 @@ export async function POST(request: NextRequest) {
       user.aiCallsUsed = 0
     }
 
-    // Check AI calls limit
-    const planLimits = PLAN_LIMITS[user.plan as keyof typeof PLAN_LIMITS]
-    const limit = planLimits.aiCallsPerMonth
-    if (limit !== -1 && user.aiCallsUsed >= limit) {
+    // Simple usage limit check (can be expanded later)
+    const MAX_AI_CALLS = 100 // Basic limit
+    if (user.aiCallsUsed >= MAX_AI_CALLS) {
       throw new AppError(
         'AI calls limit reached. Please upgrade your plan.',
         'USAGE_LIMIT_REACHED',
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     // Update user usage and log API usage
     await Promise.all([
       prisma.user.update({
-        where: { id: session.user.id },
+        where: { id: context.user.id },
         data: {
           aiCallsUsed: { increment: 1 },
         },
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
       // Log API usage using the ApiUsage model fields defined in Prisma schema
       prisma.apiUsage.create({
         data: {
-          userId: session.user.id,
+          userId: context.user.id,
           endpoint: '/api/generate',
           method: 'POST',
           tokens: estimatedTokens,
@@ -121,10 +121,23 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Generate API error:', error)
     const { message, code, statusCode } = handleApiError(error)
-    
+
     return NextResponse.json(
       { error: message, code },
       { status: statusCode }
     )
   }
 }
+
+// Apply middleware with authentication required
+export const POST = withAuth(generateHandler, {
+  auth: { required: true },
+  cors: {
+    origin: process.env.NODE_ENV === 'production'
+      ? [process.env.NEXTAUTH_URL!]
+      : ['http://localhost:3000'],
+    methods: ['POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  },
+});

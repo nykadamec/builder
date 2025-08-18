@@ -1,14 +1,51 @@
 {
   "appName": "AI Web App Builder",
-  "version": "0.2.0",
+  "version": "0.3.2",
   "author": "nykadamec",
   "github": "https://github.com/nykadamec",
-  "description": "AI-powered builder for creating web apps from natural language prompts.",
+  "description": "AI-powered builder for creating web apps from natural language prompts with unified JWT authentication system.",
+  "features": {
+    "authentication": {
+      "enabled": true,
+      "provider": "custom-jwt",
+      "database": "sqlite",
+      "security": {
+        "bcryptRounds": 12,
+        "jwtExpiry": "7d",
+        "rateLimiting": true,
+        "passwordRequirements": {
+          "minLength": 8,
+          "requireUppercase": true,
+          "requireLowercase": true,
+          "requireNumbers": true,
+          "requireSpecialChars": true
+        }
+      }
+    },
+    "userManagement": {
+      "registration": true,
+      "profileUpdates": true,
+      "passwordChange": true,
+      "accountDeletion": true
+    }
+  },
   "ui": {
     "designSystem": "Aceternity UI inspired",
     "framework": "Tailwind CSS + Framer Motion",
     "theme": "Dark-first design",
     "colorPalette": "Indigo/Violet/Fuchsia gradients"
+  },
+  "database": {
+    "provider": "sqlite",
+    "orm": "prisma",
+    "migrations": true
+  },
+  "security": {
+    "cors": true,
+    "helmet": true,
+    "rateLimiting": true,
+    "inputValidation": true,
+    "sanitization": true
   },
   "playwright": {
     "baseURL": "http://localhost:3000",

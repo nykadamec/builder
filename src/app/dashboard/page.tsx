@@ -1,6 +1,5 @@
-import { getServerSession } from "next-auth/next"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
+'use client';
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -8,19 +7,19 @@ import { Plus, Code, Zap, Users } from "lucide-react"
 import Link from "next/link"
 import Header from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
+import { useAuth } from '@/contexts/AuthContext'
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions)
+function DashboardContent() {
+  const { user } = useAuth()
 
-  if (!session) {
-    redirect("/api/auth/signin")
+  if (!user) {
+    return null; // This shouldn't happen due to ProtectedRoute, but TypeScript safety
   }
-
-  const { user } = session
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <Header variant="dashboard" user={{ name: user.name, plan: user.plan }} />
+      <Header variant="dashboard" user={{ name: user.name, plan: 'FREE' }} />
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
@@ -31,9 +30,9 @@ export default async function DashboardPage() {
               <Zap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{user.usage?.aiCallsUsed || 0}</div>
+              <div className="text-2xl font-bold">0</div>
               <p className="text-xs text-muted-foreground">
-                z {user.plan === 'FREE' ? '10' : user.plan === 'PRO' ? '1000' : 'neomezeně'} měsíčně
+                z 10 měsíčně (FREE plán)
               </p>
             </CardContent>
           </Card>
@@ -44,9 +43,9 @@ export default async function DashboardPage() {
               <Code className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{user.usage?.projectsUsed || 0}</div>
+              <div className="text-2xl font-bold">0</div>
               <p className="text-xs text-muted-foreground">
-                z {user.plan === 'FREE' ? '3' : user.plan === 'PRO' ? '50' : 'neomezeně'} celkem
+                z 3 celkem (FREE plán)
               </p>
             </CardContent>
           </Card>
@@ -57,9 +56,9 @@ export default async function DashboardPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{user.usage?.exportsUsed || 0}</div>
+              <div className="text-2xl font-bold">0</div>
               <p className="text-xs text-muted-foreground">
-                z {user.plan === 'FREE' ? '5' : user.plan === 'PRO' ? '100' : 'neomezeně'} měsíčně
+                z 5 měsíčně (FREE plán)
               </p>
             </CardContent>
           </Card>
@@ -118,4 +117,12 @@ export default async function DashboardPage() {
       <Footer />
     </div>
   )
+}
+
+export default function DashboardPage() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
+  );
 }

@@ -4,9 +4,9 @@ import en from "@/locales/en.json"
 import cs from "@/locales/cs.json"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { AuthSessionProvider } from "@/components/providers/session-provider"
 import { LocaleProvider } from "@/components/providers/locale-provider"
 import { appBackground as AppBackground } from "@/components/ui/background";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -43,7 +43,7 @@ export default async function RootLayout({
         className={`${inter.className} antialiased min-h-screen text-foreground bg-transparent`}
       >
           <AppBackground />
-        <AuthSessionProvider>
+        <AuthProvider>
           <LocaleProvider initialLocale={locale}>
             <div className="flex min-h-screen flex-col">
               {/* content wrapper: ensures padding on small screens and centered max width on larger screens */}
@@ -54,7 +54,7 @@ export default async function RootLayout({
               </div>
             </div>
           </LocaleProvider>
-        </AuthSessionProvider>
+        </AuthProvider>
 
       </body>
     </html>

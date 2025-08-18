@@ -1,11 +1,99 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "motion/react";
-import { Mail, Lock, Eye, EyeOff, Sparkles, Github, LogIn, UserPlus } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Sparkles, Github, LogIn, UserPlus, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { modernRegisterSchema } from "@/lib/auth/validation";
+import type { ZodIssue } from "zod";
 
 
 export const RegisterPage = () => {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [generalError, setGeneralError] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!agreedToTerms) {
+      setGeneralError('Musíte souhlasit s obchodními podmínkami');
+      return;
+    }
+
+    setIsLoading(true);
+    setGeneralError('');
+    setErrors({});
+
+    try {
+      // Validate form data
+      const validation = modernRegisterSchema.safeParse(formData);
+      if (!validation.success) {
+        const fieldErrors: Record<string, string> = {};
+        validation.error.issues.forEach((issue: ZodIssue) => {
+          const field = String(issue.path?.[0] ?? 'general');
+          fieldErrors[field] = issue.message;
+        });
+        setErrors(fieldErrors);
+        setIsLoading(false);
+        return;
+      }
+
+      // Submit registration request
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(validation.data),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.details) {
+          // Field-specific errors
+          const fieldErrors: Record<string, string> = {};
+          data.details.forEach((detail: any) => {
+            fieldErrors[detail.field] = detail.message;
+          });
+          setErrors(fieldErrors);
+        } else {
+          setGeneralError(data.error || 'Registrace se nezdařila');
+        }
+        return;
+      }
+
+      // Success - redirect to login or dashboard
+      router.push('/login?message=Registrace úspěšná! Nyní se můžete přihlásit.');
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      setGeneralError('Došlo k chybě při registraci. Zkuste to prosím znovu.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AuthLayout>
       <AuthCard>
@@ -18,20 +106,74 @@ export const RegisterPage = () => {
           icon={<UserPlus className="h-5 w-5" />}
         />
 
-        <form className="mt-6 space-y-4">
-          <Input name="name" type="text" placeholder="Jan Novák" icon={<Sparkles className="h-4 w-4" />} label="Jméno" />
-          <Input name="email" type="email" placeholder="name@example.com" icon={<Mail className="h-4 w-4" />} label="E-mail" />
-          <PasswordInput name="password" placeholder="Min. 8 znaků" label="Heslo" />
+        {generalError && (
+          <div className="mt-4 flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <span>{generalError}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <Input
+            name="name"
+            type="text"
+            placeholder="Jan Novák"
+            icon={<Sparkles className="h-4 w-4" />}
+            label="Jméno"
+            value={formData.name}
+            onChange={handleChange}
+            error={errors.name}
+            disabled={isLoading}
+          />
+          <Input
+            name="email"
+            type="email"
+            placeholder="name@example.com"
+            icon={<Mail className="h-4 w-4" />}
+            label="E-mail"
+            value={formData.email}
+            onChange={handleChange}
+            error={errors.email}
+            disabled={isLoading}
+          />
+          <PasswordInput
+            name="password"
+            placeholder="Min. 8 znaků"
+            label="Heslo"
+            value={formData.password}
+            onChange={handleChange}
+            error={errors.password}
+            disabled={isLoading}
+          />
+          <PasswordInput
+            name="confirmPassword"
+            placeholder="Potvrdit heslo"
+            label="Potvrdit heslo"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            error={errors.confirmPassword}
+            disabled={isLoading}
+          />
 
           <label className="mt-1 inline-flex items-start gap-3 text-sm text-white/75">
-            <input type="checkbox" className="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-fuchsia-400 focus:ring-fuchsia-400" />
+            <input
+              type="checkbox"
+              className="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-fuchsia-400 focus:ring-fuchsia-400"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              disabled={isLoading}
+            />
             <span>
               Souhlasím s <a href="#" className="underline underline-offset-4 hover:text-white">obchodními podmínkami</a> a <a href="#" className="underline underline-offset-4 hover:text-white">ochranou soukromí</a>.
             </span>
           </label>
 
-          <button type="submit" className="group relative inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-tr from-indigo-500 via-violet-500 to-fuchsia-500 px-4 py-3 font-semibold shadow-lg shadow-fuchsia-500/20 transition hover:shadow-fuchsia-500/30">
-            Vytvořit účet
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="group relative inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-tr from-indigo-500 via-violet-500 to-fuchsia-500 px-4 py-3 font-semibold shadow-lg shadow-fuchsia-500/20 transition hover:shadow-fuchsia-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Registruji...' : 'Vytvořit účet'}
           </button>
         </form>
 
@@ -69,7 +211,7 @@ function Header({ eyebrow, title, subtitle, icon }: { eyebrow?: string; title: R
   );
 }
 
-function Input({ label, icon, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label?: string; icon?: React.ReactNode }) {
+function Input({ label, icon, error, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label?: string; icon?: React.ReactNode; error?: string }) {
   return (
     <label className="block text-sm">
       {label && <span className="mb-1.5 block text-white/80">{label}</span>}
@@ -77,14 +219,24 @@ function Input({ label, icon, ...props }: React.InputHTMLAttributes<HTMLInputEle
         <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/50">{icon}</span>
         <input
           {...props}
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-10 py-3 text-white placeholder:text-white/40 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/30"
+          className={`w-full rounded-xl border px-10 py-3 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 ${
+            error
+              ? 'border-red-500/50 bg-red-500/10 focus:border-red-400 focus:ring-red-400/30'
+              : 'border-white/10 bg-white/5 focus:border-fuchsia-400 focus:ring-fuchsia-400/30'
+          }`}
         />
       </span>
+      {error && (
+        <span className="mt-1 flex items-center gap-1 text-xs text-red-400">
+          <AlertCircle className="h-3 w-3" />
+          {error}
+        </span>
+      )}
     </label>
   );
 }
 
-function PasswordInput({ label, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label?: string }) {
+function PasswordInput({ label, error, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label?: string; error?: string }) {
   const [show, setShow] = React.useState(false);
   return (
     <label className="block text-sm">
@@ -94,7 +246,11 @@ function PasswordInput({ label, ...props }: React.InputHTMLAttributes<HTMLInputE
         <input
           {...props}
           type={show ? "text" : "password"}
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-10 py-3 text-white placeholder:text-white/40 focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/30"
+          className={`w-full rounded-xl border px-10 py-3 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 ${
+            error
+              ? 'border-red-500/50 bg-red-500/10 focus:border-red-400 focus:ring-red-400/30'
+              : 'border-white/10 bg-white/5 focus:border-fuchsia-400 focus:ring-fuchsia-400/30'
+          }`}
         />
         <button
           type="button"
@@ -105,6 +261,12 @@ function PasswordInput({ label, ...props }: React.InputHTMLAttributes<HTMLInputE
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       </span>
+      {error && (
+        <span className="mt-1 flex items-center gap-1 text-xs text-red-400">
+          <AlertCircle className="h-3 w-3" />
+          {error}
+        </span>
+      )}
     </label>
   );
 }

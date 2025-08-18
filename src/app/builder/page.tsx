@@ -4,8 +4,9 @@ import React from "react";
 import Header from "@/components/layout/Header";
 import { builder_area as Builder } from "@/components/builder/builder_area";
 import { Footer } from "@/components/layout/Footer";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
-export default function BuilderPage() {
+function BuilderContent() {
   return (
     <div className="flex min-h-screen flex-col text-white antialiased selection:bg-white/10 selection:text-white">
       <Header variant="landing" />
@@ -14,5 +15,13 @@ export default function BuilderPage() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+export default function BuilderPage() {
+  return (
+    <ProtectedRoute>
+      <BuilderContent />
+    </ProtectedRoute>
   );
 }
